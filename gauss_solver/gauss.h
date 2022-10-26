@@ -6,21 +6,22 @@
 #define NUMERICAL_TASK_8_GAUSS_H
 
 #include <vector>
+#include <tuple>
 
 /**
- * Divides polynomial p(x) by x - x_0
+ * Divides polynomial p(x) by x - c
  * @param p dividend
- * @param x divider
- * @return quotient
+ * @param c divider
+ * @return quotient and residual
  */
-std::vector<double> divide_polynomial_by(std::vector<double> p, double x_0);
+std::tuple<std::vector<double>, double> divide_polynomial_by(const std::vector<double>& p, double c);
 
 /**
  * Solves p(x) = 0
  * @param p
  * @return vector of roots
  */
-std::vector<double> solve_polynomial_bernoulli(std::vector<double> p);
+std::vector<double> solve_polynomial_bernoulli(const std::vector<double>& p);
 
 /**
  * Calculates Legendre polynomial coefficients for power of n
