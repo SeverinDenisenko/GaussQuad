@@ -3,6 +3,9 @@
 //
 
 #include "gauss.h"
+
+#include <random>
+#include <algorithm>
 #include <iostream>
 
 std::tuple<std::vector<double>, double> divide_polynomial_by(const std::vector<double>& p, double c)
@@ -55,3 +58,58 @@ std::vector<double> get_legendre_polynomial(uint32_t n)
     return res;
 }
 
+std::vector<double> solve_polynomial_bernoulli(const std::vector<double> &p)
+{
+    std::vector<double> roots;
+    std::vector<double> _p = p;
+
+    // iterate throw polynomial, dividing by biggest root
+    while (_p.size() != 2){
+        std::vector<double> difference_equation(_p.size());
+
+        // fill with random values
+        std::random_device rd;
+        std::default_random_engine eng(rd());
+        std::uniform_real_distribution<double> randomizer(-1.0, 1.0);
+
+        for (auto& item : difference_equation)
+        {
+            item = randomizer(eng);
+        }
+
+        double root = difference_equation.at(difference_equation.size() - 1) /
+                      difference_equation.at(difference_equation.size() - 2);
+        double root1 = 0;
+
+        // iterate throw the difference equation
+        while (fabs(root - root1) > 10e-10){
+            // find next y
+            double y = 0;
+            for (uint32_t i = 1; i < difference_equation.size(); ++i)
+            {
+                y -= _p.at(i) * difference_equation.at(difference_equation.size() - i);
+            }
+
+            // shift difference equation
+            std::shift_left(difference_equation.begin(), difference_equation.end(), 1);
+            difference_equation.at(difference_equation.size() - 1) = y;
+
+            root1 = root;
+            root = difference_equation.at(difference_equation.size() - 1) /
+                   difference_equation.at(difference_equation.size() - 2);
+
+        }
+
+        double residual = 0;
+        roots.push_back(root);
+
+        std::tie(_p, residual) = divide_polynomial_by(_p, root);
+
+        difference_equation.pop_back();
+    }
+
+    // Find the last root
+    roots.push_back(- _p.at(1) / _p.at(0));
+
+    return roots;
+}

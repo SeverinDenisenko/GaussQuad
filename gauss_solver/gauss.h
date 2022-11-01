@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <tuple>
+#include <cstdint>
 
 /**
  * Divides polynomial p(x) by x - c
