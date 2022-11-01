@@ -5,7 +5,7 @@
 
 int main()
 {
-    auto res = solve_polynomial_bernoulli({1, -12, 12, 80});
+    auto res = calculate_roots_gauss(11);
 
     std::for_each(res.begin(), res.end(), [&](const auto &item)
     {

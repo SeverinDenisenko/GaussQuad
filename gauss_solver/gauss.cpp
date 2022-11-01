@@ -8,11 +8,11 @@
 #include <algorithm>
 #include <iostream>
 
-std::tuple<std::vector<double>, double> divide_polynomial_by(const std::vector<double>& p, double c)
+std::tuple<std::vector<double>, double> divide_polynomial_by(const std::vector<double> &p, double c)
 {
     uint32_t n = p.size();
     std::vector<double> result(n - 1);
-    
+
     result[0] = p[0];
 
     for (uint32_t i = 1; i < n - 1; ++i)
@@ -64,7 +64,8 @@ std::vector<double> solve_polynomial_bernoulli(const std::vector<double> &p)
     std::vector<double> _p = p;
 
     // iterate throw polynomial, dividing by biggest root
-    while (_p.size() != 2){
+    while (_p.size() != 2)
+    {
         std::vector<double> difference_equation(_p.size());
 
         // fill with random values
@@ -72,7 +73,7 @@ std::vector<double> solve_polynomial_bernoulli(const std::vector<double> &p)
         std::default_random_engine eng(rd());
         std::uniform_real_distribution<double> randomizer(-1.0, 1.0);
 
-        for (auto& item : difference_equation)
+        for (auto &item: difference_equation)
         {
             item = randomizer(eng);
         }
@@ -82,13 +83,15 @@ std::vector<double> solve_polynomial_bernoulli(const std::vector<double> &p)
         double root1 = 0;
 
         // iterate throw the difference equation
-        while (fabs(root - root1) > 10e-10){
+        while (fabs(root - root1) > 10e-10)
+        {
             // find next y
             double y = 0;
             for (uint32_t i = 1; i < difference_equation.size(); ++i)
             {
                 y -= _p.at(i) * difference_equation.at(difference_equation.size() - i);
             }
+            y /= _p.at(0);
 
             // shift difference equation
             std::shift_left(difference_equation.begin(), difference_equation.end(), 1);
@@ -109,7 +112,41 @@ std::vector<double> solve_polynomial_bernoulli(const std::vector<double> &p)
     }
 
     // Find the last root
-    roots.push_back(- _p.at(1) / _p.at(0));
+    roots.push_back(-_p.at(1) / _p.at(0));
+
+    return roots;
+}
+
+std::vector<double> calculate_roots_gauss(uint32_t n)
+{
+    std::vector<double> roots;
+
+    std::vector<double> legendre = get_legendre_polynomial(n);
+
+    if (n % 2 == 1)
+    {
+        // For odd order Legendre polynomial (a_n = 0) can be divided by x and 0.0 root excluded
+        legendre.pop_back(); // divide by x
+
+        roots.push_back(0.0);
+    }
+
+    // For even order Legendre polynomial can be made substitution y = x^2
+    std::vector<double> mod_legendre;
+
+    for (uint32_t i = 0; i < legendre.size(); i += 2)
+    {
+        mod_legendre.push_back(legendre.at(i));
+    }
+
+    std::vector<double> square_roots = solve_polynomial_bernoulli(mod_legendre);
+
+    // Back substitution
+    for (auto item: square_roots)
+    {
+        roots.push_back(-sqrt(item));
+        roots.push_back(sqrt(item));
+    }
 
     return roots;
 }
