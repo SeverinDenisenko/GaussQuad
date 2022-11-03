@@ -15,13 +15,13 @@ int main(int argc, char **argv)
     uint32_t n = std::stoul(argv[1]);
 
     auto roots = calculate_roots_gauss(n);
-    auto points = calculate_coefficients_gauss(roots);
+    auto coefficients = calculate_coefficients_gauss(roots);
 
     std::ofstream out("quad" + std::to_string(n) + ".dat");
 
     for (uint32_t i = 0; i < n; ++i)
     {
-        out << points.at(i) << " " << roots.at(i) << std::endl;
+        out << coefficients.at(i) << " " << roots.at(i) << std::endl;
     }
 
     out.close();

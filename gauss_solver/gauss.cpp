@@ -83,7 +83,7 @@ std::vector<double> solve_polynomial_bernoulli(const std::vector<double> &p)
         double root1 = 0;
 
         // iterate throw the difference equation
-        while (fabs(root - root1) > 10e-10)
+        while (fabs(root - root1) > 10e-6)
         {
             // find next y
             double y = 0;
