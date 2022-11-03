@@ -1,18 +1,30 @@
 #include <iostream>
 #include <algorithm>
-#include <cstdint>
+#include <fstream>
+#include <numeric>
+
 #include "gauss.h"
 
-int main()
+int main(int argc, char **argv)
 {
-    auto res = calculate_roots_gauss(11);
+    if (argc != 2){
+        std::cerr << "Expected one input argument!" << std::endl;
+        return 1;
+    }
 
-    std::for_each(res.begin(), res.end(), [&](const auto &item)
+    uint32_t n = std::stoul(argv[1]);
+
+    auto roots = calculate_roots_gauss(n);
+    auto points = calculate_coefficients_gauss(roots);
+
+    std::ofstream out("quad" + std::to_string(n) + ".dat");
+
+    for (uint32_t i = 0; i < n; ++i)
     {
-        std::cout << item << " ";
-    });
+        out << points.at(i) << " " << roots.at(i) << std::endl;
+    }
 
-    std::cout << std::endl;
+    out.close();
 
     return 0;
 }

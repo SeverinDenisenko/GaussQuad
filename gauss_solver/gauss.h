@@ -43,6 +43,6 @@ std::vector<double> calculate_roots_gauss(uint32_t n);
  * @param n number of the points
  * @return vector of the coefficients
  */
-std::vector<double> calculate_coefficients_gauss(uint32_t n);
+std::vector<double> calculate_coefficients_gauss(const std::vector<double>& roots);
 
 #endif //NUMERICAL_TASK_8_GAUSS_H

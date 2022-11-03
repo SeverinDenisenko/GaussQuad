@@ -6,7 +6,7 @@ CMP_KEYS=-Wall -Wextra -Wfloat-equal -Wundef -Wcast-align -Wwrite-strings -Wlogi
 CMP_OPT=-O3
 
 run: build $(wildcard data.dat)
-	./$(EXEC_NAME)
+	./$(EXEC_NAME) 20
 
 build: $(wildcard *.cpp *.h Makefile)
 	$(CMP) -std=c++20 $(CMP_KEYS) $(CMP_OPT) *.cpp -o $(EXEC_NAME)

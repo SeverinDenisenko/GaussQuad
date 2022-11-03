@@ -150,3 +150,143 @@ std::vector<double> calculate_roots_gauss(uint32_t n)
 
     return roots;
 }
+
+void SolveLeadElement(double **A, std::vector<double> &X);
+void SolveLeadElement(double **A, std::vector<double> &X)
+{
+    int n = X.size();
+
+    int *x_order = (int *) malloc(sizeof(int) * n);
+
+    for (int i = 0; i < n; i++)
+    {
+        x_order[i] = i;
+    }
+
+    for (int j = 0; j < n; j++)
+    {
+        // Serch for biggest element and change order //
+
+        int max_i = 0;
+        int max_j = 0;
+        double max = 0;
+
+        for (int z = j; z < n; z++)
+        {
+            for (int t = j; t < n; t++)
+            {
+                if (fabs(A[z][t]) > max)
+                {
+                    max = fabs(A[z][t]);
+                    max_i = z;
+                    max_j = t;
+                }
+            }
+        }
+
+        //for (int i = 0; i < n; i++)
+        //{
+        //    std::swap(A[i][max_j], A[i][j]);
+        //}
+        //std::swap(A[max_i], A[j]);
+        //std::swap(x_order[j], x_order[max_j]);
+
+        for (int i = 0; i < n; i++)
+        {
+            double tmp = A[i][max_j];
+            A[i][max_j] = A[i][j];
+            A[i][j] = tmp;
+        }
+
+        double *tmp = A[j];
+        A[j] = A[max_i];
+        A[max_i] = tmp;
+
+        int tmp1 = x_order[j];
+        x_order[j] = x_order[max_j];
+        x_order[max_j] = tmp1;
+
+
+        ////////////////////////////////////////////////
+
+        for (int i = j + 1; i < n; i++)
+        {
+            double div = A[i][j] / A[j][j];
+
+            for (int k = 0; k < n + 1; k++)
+            {
+                A[i][k] = A[i][k] - div * A[j][k];
+            }
+        }
+    }
+
+    X[n - 1] = A[n - 1][n] / A[n - 1][n - 1];
+
+    for (int i = n - 2; i >= 0; i--)
+    {
+        double sum = 0;
+        for (int j = i + 1; j < n; j++)
+        {
+            sum = sum + A[i][j] * X[j];
+        }
+        X[i] = (A[i][n] - sum) / A[i][i];
+    }
+
+    // Restore the order of X //
+
+    for (int i = 0; i < n; i++) {
+        int next = i;
+
+        while (x_order[next] >= 0) {
+
+            //std::swap(X[i], X[x_order[next]]);
+            double tmp = X[i];
+            X[i] = X[x_order[next]];
+            X[x_order[next]] = tmp;
+
+            int temp = x_order[next];
+
+            x_order[next] -= n;
+            next = temp;
+        }
+    }
+
+    free(x_order);
+
+    ////////////////////////////
+}
+
+std::vector<double> calculate_coefficients_gauss(const std::vector<double>& roots)
+{
+    std::vector<double> res(roots.size());
+
+    // Solve linear equation with Full-piv
+    uint32_t n = roots.size();
+
+    auto **A = (double **)malloc(sizeof(double *) * roots.size());
+    for (uint32_t i = 0; i < n; ++i)
+    {
+        A[i] = (double *)malloc(sizeof(double) * (n + 1));
+    }
+
+    for (uint32_t k = 0; k < n; ++k)
+    {
+        for (uint32_t i = 0; i < n; ++i)
+        {
+            A[k][i] = pow(roots.at(i), k);
+        }
+    }
+
+    for (uint32_t k = 0; k < n; ++k)
+    {
+        if (k % 2 == 1){
+            A[k][n] = 0;
+        } else {
+            A[k][n] = 2 / ((double)k + 1);
+        }
+    }
+
+    SolveLeadElement(A, res);
+
+    return res;
+}
